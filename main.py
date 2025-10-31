@@ -16,12 +16,12 @@ except Exception as e:
     print(f"Ошибка при подключении к MongoDB: {e}")
 
 
-def archive_inactive_users(registration_days: int=30, inactiv_days: int=14) -> dict:
+def archive_inactive_users(registration_days: int=30, inactive_days: int=14) -> dict:
     """
     Архивирует ID неактивных пользователей и формирует по ним информацию для отчета
     """
     registration_threshold = current_date - timedelta(days=registration_days)
-    activity_threshold = current_date - timedelta(days=inactiv_days)
+    activity_threshold = current_date - timedelta(days=inactive_days)
     # Формируется запрос для поиска неактивных пользователей
     query = {
         "event_time": {"$lt": activity_threshold},
