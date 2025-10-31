@@ -46,11 +46,21 @@ def save_report_to_file(report: dict) -> None:
     """
     Сохраняет отчет в JSON файл
     """
-    report_filename = f"archive_report_{current_date.strftime('%Y-%m-%d')}.json"
-    with open(report_filename, 'w', encoding='utf-8') as report_out:
-        json.dump(report, report_out, indent=2, ensure_ascii=False)
-    print(f"Всего перемещено в архив {len(report['archived_user_ids'])} неактивных пользователей.")
-    print(f"Отчет сохранен в файл: {report_filename}")
+    try:
+        report_filename = f"archive_report_{current_date.strftime('%Y-%m-%d')}.json"
+
+        with open(report_filename, 'w', encoding='utf-8') as report_out:
+            json.dump(report, report_out, indent=2, ensure_ascii=False)
+
+        print(f"Всего перемещено в архив {len(report['archived_user_ids'])} неактивных пользователей.")
+        print(f"Отчет сохранен в файл: {report_filename}")
+
+    except PermissionError:
+        print(f"Ошибка: Нет прав для записи в файл {report_filename}")
+    except IOError as e:
+        print(f"Ошибка ввода-вывода при записи файла: {e}")
+    except Exception as e:
+        print(f"Неожиданная ошибка при сохранении отчета: {e}")
 
 
 if __name__ == "__main__":
