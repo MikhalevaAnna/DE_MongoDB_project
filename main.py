@@ -37,7 +37,7 @@ def archive_inactive_users(registration_days: int=30, inactive_days: int=14) -> 
     report = {
          "date": current_date.strftime('%Y-%m-%d'),
          "archived_users_count": len(users_to_archive),
-         "archived_users_ids": list(map(lambda user: user["user_id"], users_to_archive))
+         "archived_user_ids": list(map(lambda user: user["user_id"], users_to_archive))
     }
     return report
 
@@ -49,7 +49,7 @@ def save_report_to_file(report: dict) -> None:
     report_filename = f"archive_report_{current_date.strftime('%Y-%m-%d')}.json"
     with open(report_filename, 'w', encoding='utf-8') as report_out:
         json.dump(report, report_out, indent=2, ensure_ascii=False)
-    print(f"Всего перемещено в архив {len(report['archived_users_ids'])} неактивных пользователей.")
+    print(f"Всего перемещено в архив {len(report['archived_user_ids'])} неактивных пользователей.")
     print(f"Отчет сохранен в файл: {report_filename}")
 
 
