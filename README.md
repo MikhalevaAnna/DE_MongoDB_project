@@ -22,7 +22,7 @@
 {
   "date": "2025-10-31",
   "archived_users_count": 10,
-  "archived_users_ids": [
+  "archived_user_ids": [
     123,
     124,
     125,
