@@ -28,7 +28,8 @@ def archive_inactive_users(current_date: datetime, registration_days: int = 30, 
             "$group": {
                 "_id": "$user_id",
                 "last_activity": {"$max": "$event_time"},
-                "registration_date": {"$first": "$user_info.registration_date"}
+                "registration_date": {"$first": "$user_info.registration_date"},
+                "user_docs": {"$push": "$$ROOT"}
             }
         },
         {
@@ -43,29 +44,31 @@ def archive_inactive_users(current_date: datetime, registration_days: int = 30, 
             }
         }
     ]
-
     users_to_archive = list(user_events.aggregate(query))
+
     if not users_to_archive:
         return {
             "date": current_date.strftime('%Y-%m-%d'),
             "archived_users_count": 0,
             "archived_user_ids": []
         }
+    all_docs_to_archive = []
+    archived_user_ids = []
+
+    for user in users_to_archive:
+        all_docs_to_archive.extend(user['user_docs'])
+        archived_user_ids.append(user['_id'])
+
+    # Архивируются данные
     try:
-        archived_user_ids = []
-        for user in users_to_archive:
-            archived_user = user_events.find_one({"user_id": user['_id']})
-            if archived_user:
-                # Документы добавляются в архив
-                 archived_users.insert_one(archived_user)
-                # Добавляются в список user_id для отчета
-                 archived_user_ids.append(user['_id'])
-        # Документы удаляются из основной коллекции
+        # Вставляются документы в архив
+        archived_users.insert_many(all_docs_to_archive)
+        # Удаляются данные из основной коллекции
         user_events.delete_many({"user_id": {"$in": archived_user_ids}})
     except Exception as e:
         print(f"Ошибка при архивации: {e}")
         return {"error": f"Archive failed: {e}"}
-    
+
     report = {
         "date": current_date.strftime('%Y-%m-%d'),
         "archived_users_count": len(archived_user_ids),
