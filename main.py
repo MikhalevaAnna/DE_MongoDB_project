@@ -39,8 +39,7 @@ def archive_inactive_users(current_date: datetime, registration_days: int = 30, 
         },
         {
             "$sort": {
-                "_id": 1,
-                "last_activity": -1
+                "_id": 1
             }
         }
     ]
