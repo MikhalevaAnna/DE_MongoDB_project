@@ -60,12 +60,12 @@ def archive_inactive_users(current_date: datetime, registration_days: int = 30, 
                  archived_users.insert_one(archived_user)
                 # Добавляются в список user_id для отчета
                  archived_user_ids.append(user['_id'])
-        # Удаляются из основной коллекции
+        # Документы удаляются из основной коллекции
         user_events.delete_many({"user_id": {"$in": archived_user_ids}})
     except Exception as e:
         print(f"Ошибка при архивации: {e}")
         return {"error": f"Archive failed: {e}"}
-
+    
     report = {
         "date": current_date.strftime('%Y-%m-%d'),
         "archived_users_count": len(archived_user_ids),
